@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WP Torrent Tracker - Professional BitTorrent Tracking Solution</title>
+    <meta name="description" content="WP Torrent Tracker - Complete BitTorrent tracking solution for WordPress. PHP-based, resource-efficient, with full release coming by end of 2026.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #334155;
+            background: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background: rgba(15, 23, 42, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section with Slideshow */
+        .hero {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .hero-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .hero-slide.active {
+            opacity: 0.1;
+        }
+
+        .hero-slide:nth-child(1) {
+            background-image: url('assets/images/wptt_indexpage.png');
+        }
+
+        .hero-slide:nth-child(2) {
+            background-image: url('assets/images/admin/wptt_admin_page.png');
+        }
+
+        .hero-slide:nth-child(3) {
+            background-image: url('assets/images/wptt_profilepage.png');
+        }
+
+        .hero-slide:nth-child(4) {
+            background-image: url('assets/images/wptt_browsepage.png');
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.9) 100%);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease-out 0.4s both;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-width: 150px;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .hero-feature i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .hero-feature h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .hero-feature p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .slideshow-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 4;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* Overview Section */
+        .overview {
+            padding: 100px 20px;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .overview-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .overview-card .icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .overview-card h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        /* Features Gallery Section */
+        .features-gallery {
+            padding: 100px 20px;
+            background: var(--light);
+        }
+
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .gallery-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .gallery-tab.active {
+            background: var(--gradient);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .gallery-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .gallery-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-image img {
+            transform: scale(1.05);
+        }
+
+        .gallery-info {
+            padding: 20px;
+        }
+
+        .gallery-info h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .gallery-info p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Image Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            cursor: pointer;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+        }
+
+        .modal-prev {
+            left: -60px;
+        }
+
+        .modal-next {
+            right: -60px;
+        }
+
+        /* Demo Section */
+        .demo {
+            padding: 100px 20px;
+            background: white;
+        }
+
+        .demo-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .demo-placeholder {
+            height: 400px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px 0;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .demo-placeholder i {
+            font-size: 4rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .demo-placeholder h3 {
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-placeholder p {
+            color: #64748b;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 100px 20px;
+            background: var(--dark);
+            color: white;
+        }
+
+        .contact-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 3rem;
+        }
+
+        .contact-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            background: #1e293b;
+            color: white;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--darker);
+            color: #64748b;
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll Animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero-features {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-form {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .modal-nav {
+                display: none;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #334155;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-download"></i>
+                WP Torrent Tracker
+            </div>
+            <ul class="nav-links">
+                <li><a href="#overview" class="active">Overview</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section with Slideshow -->
+    <section class="hero">
+        <div class="hero-slideshow">
+            <div class="hero-slide active"></div>
+            <div class="hero-slide"></div>
+            <div class="hero-slide"></div>
+            <div class="hero-slide"></div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Professional BitTorrent Tracking Solution</h1>
+            <p>Complete WordPress torrent tracker plugin with advanced features, beautiful UI, and enterprise-grade security. PHP-based solution that runs efficiently on any hosting with limited resources.</p>
+
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <i class="fas fa-code"></i>
+                    <h3>PHP-Based</h3>
+                    <p>Lightweight & efficient</p>
+                </div>
+                <div class="hero-feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure</h3>
+                    <p>Enterprise-grade protection</p>
+                </div>
+                <div class="hero-feature">
+                    <i class="fas fa-rocket"></i>
+                    <h3>Fast</h3>
+                    <p>Optimized performance</p>
+                </div>
+                <div class="hero-feature">
+                    <i class="fas fa-calendar"></i>
+                    <h3>2026</h3>
+                    <p>Full release coming</p>
+                </div>
+            </div>
+
+            <div class="hero-buttons">
+                <a href="#features" class="btn btn-primary">
+                    <i class="fas fa-eye"></i>
+                    Explore Features
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i>
+                    Get In Touch
+                </a>
+            </div>
+        </div>
+        <div class="slideshow-indicators">
+            <div class="indicator active" data-slide="0"></div>
+            <div class="indicator" data-slide="1"></div>
+            <div class="indicator" data-slide="2"></div>
+            <div class="indicator" data-slide="3"></div>
+        </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section class="overview" id="overview">
+        <div class="section-header animate-on-scroll">
+            <h2>Project Overview</h2>
+            <p>WP Torrent Tracker is a comprehensive BitTorrent tracking solution built specifically for WordPress. Designed to run efficiently on shared hosting with limited resources while providing enterprise-level features and security.</p>
+        </div>
+
+        <div class="overview-grid">
+            <div class="overview-card animate-on-scroll">
+                <div class="icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>PHP-Based Architecture</h3>
+                <p>Built with pure PHP for maximum compatibility and performance. No heavy frameworks or dependencies required.</p>
+            </div>
+
+            <div class="overview-card animate-on-scroll">
+                <div class="icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <h3>Resource Efficient</h3>
+                <p>Optimized for shared hosting environments. Low memory footprint and efficient database queries.</p>
+            </div>
+
+            <div class="overview-card animate-on-scroll">
+                <div class="icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Enterprise Security</h3>
+                <p>Passkey authentication, CSRF protection, input sanitization, and comprehensive security measures.</p>
+            </div>
+
+            <div class="overview-card animate-on-scroll">
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>WordPress Integration</h3>
+                <p>Seamlessly integrates with WordPress user system, themes, and plugins for complete torrent community platform.</p>
+            </div>
+
+            <div class="overview-card animate-on-scroll">
+                <div class="icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3>Scalable Design</h3>
+                <p>Handles thousands of torrents, users, and peer connections with optimized performance and database structure.</p>
+            </div>
+
+            <div class="overview-card animate-on-scroll">
+                <div class="icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <h3>2026 Full Release</h3>
+                <p>Currently in development with limited features. Full feature set and production-ready version coming by end of 2026.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Gallery Section -->
+    <section class="features-gallery" id="features">
+        <div class="gallery-container">
+            <div class="gallery-header animate-on-scroll">
+                <h2>Complete Feature Showcase</h2>
+                <p>Explore every aspect of WP Torrent Tracker through our comprehensive screenshot gallery. Click on any image to view in full detail.</p>
+            </div>
+
+            <div class="gallery-tabs">
+                <button class="gallery-tab active" data-gallery="user-interface">User Interface</button>
+                <button class="gallery-tab" data-gallery="admin-panel">Admin Panel</button>
+                <button class="gallery-tab" data-gallery="all-features">All Features</button>
+            </div>
+
+            <!-- User Interface Gallery -->
+            <div class="gallery-content active" id="user-interface-content">
+                <div class="gallery-grid">
+                    <div class="gallery-item" data-image="assets/images/wptt_indexpage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_indexpage.png" alt="WP Torrent Tracker Homepage">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Homepage Dashboard</h3>
+                            <p>Clean, modern homepage with featured torrents, categories, and user statistics. Fully responsive design.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_browsepage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_browsepage.png" alt="Browse Torrents Page">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Browse Torrents</h3>
+                            <p>Advanced torrent browsing with filtering, sorting, and search capabilities. Category-based navigation.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_categorypage1.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_categorypage1.png" alt="Category Page 1">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Category View</h3>
+                            <p>Dedicated category pages with organized torrent listings and sub-category navigation.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_categorypage2.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_categorypage2.png" alt="Category Page 2">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Advanced Categories</h3>
+                            <p>Multi-level category system with detailed torrent information and download statistics.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_postpage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_postpage.png" alt="Torrent Details Page">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Torrent Details</h3>
+                            <p>Comprehensive torrent information page with file details, peer statistics, and download options.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_postpage_multitorrent_page.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_postpage_multitorrent_page.png" alt="Multi-Torrent Page">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Multi-Torrent Support</h3>
+                            <p>Support for multiple torrent files in a single post with organized file management.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_profilepage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_profilepage.png" alt="User Profile Page">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>User Profiles</h3>
+                            <p>Personal user dashboards with upload history, statistics, and profile customization options.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_newpost.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_newpost.png" alt="New Torrent Upload">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Upload Interface</h3>
+                            <p>Intuitive torrent upload interface with drag-and-drop support and validation.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_user_uploads.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_user_uploads.png" alt="User Uploads Management">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Upload Management</h3>
+                            <p>User upload history and management interface with editing and deletion capabilities.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_faq.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_faq.png" alt="FAQ Page">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Help & FAQ</h3>
+                            <p>Comprehensive FAQ section with common questions and troubleshooting guides.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_indexpage_categorydropdown.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_indexpage_categorydropdown.png" alt="Category Dropdown">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Category Navigation</h3>
+                            <p>Advanced category dropdown with quick access to different torrent categories.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_profiletab_dropdown.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_profiletab_dropdown.png" alt="Profile Tab Dropdown">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Profile Navigation</h3>
+                            <p>Organized profile tabs with dropdown menus for easy navigation between sections.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel Gallery -->
+            <div class="gallery-content" id="admin-panel-content">
+                <div class="gallery-grid">
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page.png" alt="Admin Dashboard">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Admin Dashboard</h3>
+                            <p>Complete administrative control panel with real-time statistics and system monitoring.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_users.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_users.png" alt="User Management">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>User Management</h3>
+                            <p>Comprehensive user administration with banning, passkey management, and access control.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_torrentslist.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_torrentslist.png" alt="Torrent Management">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Torrent Oversight</h3>
+                            <p>Complete torrent management interface with moderation tools and content control.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_setting_privatetracker.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_setting_privatetracker.png" alt="Private Tracker Settings">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Private Tracker Config</h3>
+                            <p>Advanced settings for private tracker mode with user authentication and access control.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_setting_publictracker.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_setting_publictracker.png" alt="Public Tracker Settings">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Public Tracker Config</h3>
+                            <p>Configuration options for public tracker mode with open access and community features.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_appearence.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_appearence.png" alt="Appearance Settings">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Theme Customization</h3>
+                            <p>Visual customization options for branding, colors, and layout preferences.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_maintenence.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_maintenence.png" alt="Maintenance Tools">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>System Maintenance</h3>
+                            <p>Database optimization, cleanup tools, and system health monitoring utilities.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_publictracker_fetchlist.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_publictracker_fetchlist.png" alt="Public Tracker Fetch List">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Data Synchronization</h3>
+                            <p>External data fetching and synchronization tools for public tracker integration.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Features Gallery -->
+            <div class="gallery-content" id="all-features-content">
+                <div class="gallery-grid">
+                    <!-- User Interface Images -->
+                    <div class="gallery-item" data-image="assets/images/wptt_indexpage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_indexpage.png" alt="Homepage">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Homepage Dashboard</h3>
+                            <p>Main landing page with featured content and navigation</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_browsepage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_browsepage.png" alt="Browse Page">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Torrent Browser</h3>
+                            <p>Advanced torrent browsing and search interface</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_profilepage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_profilepage.png" alt="User Profile">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>User Dashboard</h3>
+                            <p>Personal user profile and statistics</p>
+                        </div>
+                    </div>
+
+                    <!-- Admin Images -->
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page.png" alt="Admin Dashboard">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Admin Control Panel</h3>
+                            <p>Complete administrative interface</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_users.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_users.png" alt="User Management">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>User Administration</h3>
+                            <p>User management and security controls</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_categorypage1.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_categorypage1.png" alt="Category Page">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Category Organization</h3>
+                            <p>Organized content by categories</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_postpage.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_postpage.png" alt="Torrent Details">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Torrent Information</h3>
+                            <p>Detailed torrent metadata and files</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_newpost.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_newpost.png" alt="Upload Interface">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Torrent Upload</h3>
+                            <p>Intuitive file upload system</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_setting_privatetracker.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_setting_privatetracker.png" alt="Private Settings">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Privacy Controls</h3>
+                            <p>Private tracker configuration</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/admin/wptt_admin_page_appearence.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/admin/wptt_admin_page_appearence.png" alt="Appearance Settings">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Visual Customization</h3>
+                            <p>Theme and appearance controls</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" data-image="assets/images/wptt_faq.png">
+                        <div class="gallery-image">
+                            <img src="assets/images/wptt_faq.png" alt="FAQ Section">
+                        </div>
+                        <div class="gallery-info">
+                            <h3>Help & Support</h3>
+                            <p>User assistance and documentation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img id="modalImage" src="" alt="Gallery Image">
+            <div class="modal-prev">&larr;</div>
+            <div class="modal-next">&rarr;</div>
+        </div>
+    </div>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="demo-content">
+            <div class="section-header animate-on-scroll">
+                <h2>Live Demo</h2>
+                <p>Experience WP Torrent Tracker in action. Demo environment coming soon with full feature showcase.</p>
+            </div>
+
+            <div class="demo-placeholder animate-on-scroll">
+                <div>
+                    <i class="fas fa-rocket"></i>
+                    <h3>Demo Coming Soon</h3>
+                    <p>Full interactive demo will be available with the 2026 release. Stay tuned for updates!</p>
+                    <div style="margin-top: 20px;">
+                        <span style="background: var(--gradient); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem;">
+                            Expected: End of 2026
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="contact-content">
+            <h2>Get In Touch</h2>
+            <p>Interested in WP Torrent Tracker? Have questions about the project or want to stay updated on the 2026 release? We'd love to hear from you!</p>
+
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <button type="submit" class="btn btn-primary" style="width: auto; margin: 0;">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 WP Torrent Tracker. Built with ❤️ for the torrent community. Full release coming soon!</p>
+    </footer>
+
+    <!-- Tawk.to Chat Widget -->
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6956397d9778d61983a94dc1/1jdsd155r';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!--End of Tawk.to Script-->
+
+    <script>
+        // Loading screen
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Hero slideshow
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        const indicators = document.querySelectorAll('.indicator');
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        // Auto slideshow
+        setInterval(nextSlide, 4000);
+
+        // Indicator click
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => showSlide(index));
+        });
+
+        // Gallery tabs
+        const galleryTabs = document.querySelectorAll('.gallery-tab');
+        const galleryContents = document.querySelectorAll('.gallery-content');
+
+        galleryTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                galleryTabs.forEach(t => t.classList.remove('active'));
+                galleryContents.forEach(content => content.classList.remove('active'));
+
+                this.classList.add('active');
+                const contentId = this.getAttribute('data-gallery') + '-content';
+                document.getElementById(contentId).classList.add('active');
+            });
+        });
+
+        // Image modal functionality
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalClose = document.querySelector('.modal-close');
+        const modalPrev = document.querySelector('.modal-prev');
+        const modalNext = document.querySelector('.modal-next');
+
+        let currentGalleryImages = [];
+        let currentImageIndex = 0;
+
+        function openModal(imageSrc, galleryItems) {
+            currentGalleryImages = Array.from(galleryItems).map(item => item.getAttribute('data-image'));
+            currentImageIndex = currentGalleryImages.indexOf(imageSrc);
+
+            modalImage.src = imageSrc;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        function showPrevImage() {
+            currentImageIndex = (currentImageIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+            modalImage.src = currentGalleryImages[currentImageIndex];
+        }
+
+        function showNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % currentGalleryImages.length;
+            modalImage.src = currentGalleryImages[currentImageIndex];
+        }
+
+        // Gallery item click
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.gallery-item')) {
+                const galleryItem = e.target.closest('.gallery-item');
+                const imageSrc = galleryItem.getAttribute('data-image');
+                const galleryContent = galleryItem.closest('.gallery-content');
+                const galleryItems = galleryContent.querySelectorAll('.gallery-item');
+
+                openModal(imageSrc, galleryItems);
+            }
+        });
+
+        // Modal controls
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        modalPrev.addEventListener('click', showPrevImage);
+        modalNext.addEventListener('click', showNextImage);
+
+        // Keyboard navigation for modal
+        document.addEventListener('keydown', function(e) {
+            if (modal.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                } else if (e.key === 'ArrowLeft') {
+                    showPrevImage();
+                } else if (e.key === 'ArrowRight') {
+                    showNextImage();
+                }
+            }
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Contact form handling
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            alert('Thank you for your message! We\'ll get back to you soon.');
+            this.reset();
+        });
+
+        // Mobile menu
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            navLinks.classList.toggle('mobile-active');
+        });
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">/workspaces/wp-torrent-parser/index.html
