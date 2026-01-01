@@ -1,1 +1,1 @@
-# wp-torrent-parser
+# wordpress-Php-torrent-tracker
